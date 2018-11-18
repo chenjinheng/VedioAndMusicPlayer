@@ -15,7 +15,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity1"></activity>
+        <activity android:name=".activity.MainActivity1" android:launchMode="singleTask"></activity>
     </application>
 
 </manifest>
