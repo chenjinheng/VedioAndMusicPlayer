@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 
 import com.example.vediotest.R;
 import com.example.vediotest.base.BasePager;
+import com.example.vediotest.fragment.ReplaceFragment;
 import com.example.vediotest.pager.MusicPager;
 import com.example.vediotest.pager.NetMusicPager;
 import com.example.vediotest.pager.NetVideoPager;
@@ -32,9 +33,10 @@ public class MainActivity1 extends AppCompatActivity {
         setContentView(R.layout.activity_main1);
         frameLayout = (FrameLayout) findViewById(R.id.fl_main_layout);
         radioGroup = (RadioGroup) findViewById(R.id.rg_bottom_tag);
-        radioGroup.check(R.id.rb_video);
+
         initPager();
         radioGroup.setOnCheckedChangeListener(new MyOnCheckChangeListener());
+        radioGroup.check(R.id.rb_video);
     }
 
     private void initPager() {
@@ -68,19 +70,14 @@ public class MainActivity1 extends AppCompatActivity {
     private void setFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fl_main_layout,new Fragment(){
-            @Nullable
-            @Override
-            public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-                BasePager basePager = getBasePager();
-                return super.onCreateView(inflater, container, savedInstanceState);
-            }
-        });
+        transaction.replace(R.id.fl_main_layout,new ReplaceFragment(getBasePager()));
+        transaction.commit();
     }
 
     private BasePager getBasePager() {
         BasePager basePager = arrayList.get(position);
-        if(basePager != null){
+        if(basePager != null && !basePager.isInitData){
+            basePager.isInitData = true;
             basePager.initData();
         }
         return basePager;

@@ -18,7 +18,7 @@ public class VideoPager extends BasePager {
     }
 
     @Override
-    protected View initView() {
+    public View initView() {
         textView = new TextView(context);
         textView.setTextColor(Color.RED);
         return textView;
