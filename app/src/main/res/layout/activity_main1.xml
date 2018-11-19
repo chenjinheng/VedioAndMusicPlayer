@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.vediotest.activity.MainActivity1">
-    <include layout="@layout/titlebar"></include>
+    <include layout="@layout/titlebar">
+    </include>
     <FrameLayout
         android:id="@+id/fl_main_layout"
         android:layout_width="match_parent"

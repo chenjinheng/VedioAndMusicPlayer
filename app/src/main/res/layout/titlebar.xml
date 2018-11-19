@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.vediotest.view.TitleBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="55dp"
     android:background="#ff3097fd"
@@ -8,6 +9,7 @@
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:text="搜索"
+       android:id="@+id/tv_search"
       android:layout_weight="1"
        android:clickable="true"
        android:layout_marginTop="14dp"
@@ -17,12 +19,15 @@
        android:textColor="@drawable/tv_search_color_select"
        />
    <RelativeLayout
+       android:clickable="true"
+       android:id="@+id/rl_game"
        android:layout_marginLeft="3dp"
        android:layout_marginTop="7dp"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        >
       <TextView
+
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:id="@+id/tv_flog"
@@ -37,6 +42,7 @@
           android:layout_alignRight="@id/tv_flog"/>
    </RelativeLayout>
    <ImageView
+
        android:id="@+id/iv_record"
        android:layout_marginTop="7dp"
        android:layout_marginLeft="3dp"
@@ -44,4 +50,4 @@
        android:layout_height="wrap_content"
        android:src="@drawable/travelpack"
        />
-</LinearLayout>
+</com.example.vediotest.view.TitleBar>
