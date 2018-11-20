@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".activity.SystemVideoPlayer"
             android:configChanges="keyboardHidden|screenSize|orientation"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             >
         </activity>
         <activity android:name=".activity.MainActivity1" android:launchMode="singleTask"></activity>
