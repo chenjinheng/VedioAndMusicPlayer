@@ -10,5 +10,5 @@
         android:id="@+id/videoview"
         />
 
-    <include layout="@layout/media_controller"></include>
+    <include layout="@layout/media_controller" android:id="@+id/rl_top_bottom_bar"></include>
 </RelativeLayout>

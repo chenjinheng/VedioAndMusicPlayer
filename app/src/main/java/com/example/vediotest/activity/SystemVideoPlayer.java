@@ -12,11 +12,14 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +38,10 @@ import java.util.Date;
  */
 
 public class SystemVideoPlayer extends AppCompatActivity implements View.OnClickListener {
+    private static final int HIDE_MEDIACONTROLLER = 2;
     public final int PROGRESS = 1;
 
+    private RelativeLayout relativeLayout;
     private VideoView videoView;
     private Uri uri;
     private MyReceiver myReceiver;
@@ -61,6 +66,8 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     private ArrayList<MediaItem> mediaItems;
     private int position;
 
+    private GestureDetector detector;
+
     /**
      * Find the Views in the layout<br />
      * <br />
@@ -68,6 +75,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
     private void findViews() {
+        relativeLayout = (RelativeLayout) findViewById(R.id.rl_top_bottom_bar);
         llTop = (LinearLayout)findViewById( R.id.ll_top );
         tvName = (TextView)findViewById( R.id.tv_name_video );
         ivBattery = (ImageView)findViewById( R.id.iv_battery );
@@ -93,6 +101,31 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         btnPause.setOnClickListener( this );
         btnNext.setOnClickListener( this );
         btnFullScreen.setOnClickListener( this );
+        handler.removeMessages(HIDE_MEDIACONTROLLER);
+        handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+        detector = new GestureDetector(this,new GestureDetector.SimpleOnGestureListener(){
+            @Override
+            public void onLongPress(MotionEvent e) {
+                super.onLongPress(e);
+                startAndPause();
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+
+                return super.onDoubleTap(e);
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (isVisibili == false) {
+                    showMediaControll();
+                }else{
+                    hideMediaControll();
+                }
+                return super.onSingleTapConfirmed(e);
+            }
+        });
     }
 
     /**
@@ -113,20 +146,30 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         } else if ( v == btnPre ) {
             // Handle clicks for btnPre
             playPreVideo();
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
+            handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
         } else if ( v == btnPause ) {
             // Handle clicks for btnPause
-            if(videoView.isPlaying()){
-                videoView.pause();
-                btnPause.setBackgroundResource(R.drawable.btn_video_start_select);
-            }else{
-                videoView.start();
-                btnPause.setBackgroundResource(R.drawable.btn_pause_select);
-            }
+            startAndPause();
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
+            handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
         } else if ( v == btnNext ) {
             // Handle clicks for btnNext
             playNextVideo();
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
+            handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
         } else if ( v == btnFullScreen ) {
             // Handle clicks for btnFullScreen
+        }
+    }
+
+    private void startAndPause() {
+        if(videoView.isPlaying()){
+            videoView.pause();
+            btnPause.setBackgroundResource(R.drawable.btn_video_start_select);
+        }else{
+            videoView.start();
+            btnPause.setBackgroundResource(R.drawable.btn_pause_select);
         }
     }
 
@@ -139,6 +182,12 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
                 setButtonState();
             }
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        detector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     private void playNextVideo() {
@@ -216,7 +265,15 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
             ivBattery.setImageResource(R.drawable.ic_battery_60);
         }
     }
-
+    private boolean isVisibili = false;
+    private void showMediaControll(){
+        relativeLayout.setVisibility(View.VISIBLE);
+        isVisibili = true;
+    }
+    private void hideMediaControll(){
+        relativeLayout.setVisibility(View.GONE);
+        isVisibili = false;
+    }
     private void initBerrary(){
         myReceiver = new MyReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -235,6 +292,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         findViews();
         setListener();
         setButtonState();
+
     }
 
     private void setData() {
@@ -283,6 +341,8 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if(fromUser == true){
                 videoView.seekTo(progress);
+                handler.removeMessages(HIDE_MEDIACONTROLLER);
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
             }
         }
 
@@ -301,7 +361,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
 
         @Override
         public void onCompletion(MediaPlayer mp) {
-            Toast.makeText(SystemVideoPlayer.this, "播放完成", Toast.LENGTH_SHORT).show();
+            playNextVideo();
         }
     }
 
@@ -337,6 +397,9 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
                     tvCurrenttime.setText(utils.stringForTime(currentPostion));
                     handler.sendEmptyMessageDelayed(PROGRESS,1000);
                     ivSystemTime.setText(getSystemTime());
+                    break;
+                case HIDE_MEDIACONTROLLER:
+                    hideMediaControll();
                     break;
             }
         }
