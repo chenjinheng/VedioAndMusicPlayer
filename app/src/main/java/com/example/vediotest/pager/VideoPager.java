@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -83,7 +84,11 @@ public class VideoPager extends BasePager {
             MediaItem mediaItem = mediaItems.get(position);
 
             Intent intent = new Intent(context,SystemVideoPlayer.class);
-            intent.setDataAndType(Uri.parse(mediaItem.getData()),"video/*");
+//            intent.setDataAndType(Uri.parse(mediaItem.getData()),"video/*");
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("videolist",mediaItems);
+            intent.putExtras(bundle);
+            intent.putExtra("position",position);
             context.startActivity(intent);
         }
     }

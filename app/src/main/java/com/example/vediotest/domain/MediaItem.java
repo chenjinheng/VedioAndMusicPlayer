@@ -1,10 +1,12 @@
 package com.example.vediotest.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by 陈金桁 on 2018/11/19.
  */
 
-public class MediaItem {
+public class MediaItem implements Serializable {
     private String name;
     private long size;
     private long duration;
