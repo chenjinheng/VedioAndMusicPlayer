@@ -94,6 +94,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         } else if ( v == btnPre ) {
             // Handle clicks for btnPre
         } else if ( v == btnPause ) {
+            Toast.makeText(this, "暂停", Toast.LENGTH_SHORT).show();
             // Handle clicks for btnPause
         } else if ( v == btnNext ) {
             // Handle clicks for btnNext
