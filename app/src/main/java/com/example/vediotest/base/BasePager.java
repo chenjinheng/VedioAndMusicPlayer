@@ -8,7 +8,7 @@ import android.view.View;
  */
 
 public abstract class BasePager {
-    public final Context context;
+    public  Context context;
     public View rootView;
     public boolean isInitData = false;
     public BasePager(Context context){

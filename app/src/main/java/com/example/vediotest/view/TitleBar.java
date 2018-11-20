@@ -16,16 +16,16 @@ import com.example.vediotest.R;
 
 public class TitleBar extends LinearLayout implements View.OnClickListener {
     private View tv_search;
-    private View tv_flog;
+    private View rl_game;
     private View iv_record;
     private Context context;
 
     public TitleBar(Context context) {
-        super(context,null);
+        super(context);
     }
 
     public TitleBar(Context context, AttributeSet attrs) {
-        super(context, attrs,0);
+        super(context, attrs);
         Log.e("TitleBar","Success");
         this.context = context;
     }
@@ -39,11 +39,12 @@ public class TitleBar extends LinearLayout implements View.OnClickListener {
     protected void onFinishInflate() {
         super.onFinishInflate();
         tv_search = getChildAt(0);
-        tv_flog = getChildAt(1);
+        rl_game = getChildAt(1);
+
         iv_record = getChildAt(2);
         Log.e("Finash","Success");
         tv_search.setOnClickListener(this);
-        tv_flog.setOnClickListener(this);
+        rl_game.setOnClickListener(this);
         iv_record.setOnClickListener(this);
     }
 
@@ -53,7 +54,7 @@ public class TitleBar extends LinearLayout implements View.OnClickListener {
             case R.id.tv_search:
                 Toast.makeText(context, "搜搜", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.tv_flog:
+            case R.id.rl_game:
                 Toast.makeText(context, "ganme", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.iv_record:
