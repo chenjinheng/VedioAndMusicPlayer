@@ -31,7 +31,7 @@ public class SystemVideoPlayer extends AppCompatActivity{
             videoView.setVideoURI(uri);
         }
 
-        videoView.setMediaController(new MediaController(this));
+
 
 
         videoView.setOnErrorListener(new MyOnErrorListener());
