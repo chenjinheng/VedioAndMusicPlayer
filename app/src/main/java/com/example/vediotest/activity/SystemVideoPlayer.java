@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,11 +25,13 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
+
 
 import com.example.vediotest.R;
 import com.example.vediotest.domain.MediaItem;
 import com.example.vediotest.utils.Utils;
+import com.example.vediotest.view.VideoView;
+
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,10 +67,23 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     private Button btnNext;
     private Button btnFullScreen;
 
+    private int screenWidth = 0;
+    private int screenHeight = 0;//屏幕的宽高
+
     private ArrayList<MediaItem> mediaItems;
     private int position;
 
     private GestureDetector detector;
+    private boolean isFullScreen = false;
+    private static final int FULL_SCREEN = 1;
+    private static final int Default_SCREEN = 2;
+    private int vidoeWidth;
+    private int videoHeight;
+
+    private AudioManager am;//调节声音
+    private int currentVoice;
+    private int maxVoice;
+    private boolean isMute = false;//是否静音
 
     /**
      * Find the Views in the layout<br />
@@ -112,9 +129,12 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-
+                setFullScreenAndDefault();
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
                 return super.onDoubleTap(e);
             }
+
+
 
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -128,6 +148,47 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         });
     }
 
+    private void setFullScreenAndDefault() {
+        if(isFullScreen){
+            setVideoType(Default_SCREEN);
+        }else
+        {
+            setVideoType(FULL_SCREEN);
+        }
+    }
+
+    private void setVideoType(int full_screen) {
+        switch (full_screen){
+            case FULL_SCREEN:
+                //设置为屏幕大小
+                isFullScreen = true;
+                videoView.setVideoSize(screenWidth,screenHeight);
+                btnFullScreen.setBackgroundResource(R.drawable.btn_video_siwch_screen_default_selector);
+
+                break;
+            case Default_SCREEN:
+                int mVideoWidth = vidoeWidth;
+                int mVideoHeight = videoHeight;//视频真实宽高
+
+                int width = screenWidth;//屏幕宽高
+                int height = screenHeight;
+
+
+                if ( mVideoWidth * height  < width * mVideoHeight ) {
+                    //Log.i("@@@", "image too wide, correcting");
+                    width = height * mVideoWidth / mVideoHeight;
+                } else if ( mVideoWidth * height  > width * mVideoHeight ) {
+                    //Log.i("@@@", "image too tall, correcting");
+                    height = width * mVideoHeight / mVideoWidth;
+                }
+                videoView.setVideoSize(width,height);
+                isFullScreen = false;
+                btnFullScreen.setBackgroundResource(R.drawable.btn_video_siwch_screen_full_selector);
+
+                break;
+        }
+    }
+
     /**
      * Handle button click events<br />
      * <br />
@@ -138,6 +199,8 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         if ( v == btnVoice ) {
             // Handle clicks for btnVoice
+            isMute = !isMute;
+            updataVoice(currentVoice,isMute);
         } else if ( v == btnSwitchPlayer ) {
             // Handle clicks for btnSwitchPlayer
         } else if ( v == btnExit ) {
@@ -160,6 +223,8 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
             handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
         } else if ( v == btnFullScreen ) {
             // Handle clicks for btnFullScreen
+            setFullScreenAndDefault();
+            handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
         }
     }
 
@@ -187,6 +252,26 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         detector.onTouchEvent(event);
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startY = event.getY();
+                mVol = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+                touchScreen = Math.min(screenHeight,screenWidth);
+                handler.removeMessages(HIDE_MEDIACONTROLLER);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float endY = event.getY();
+                float fistancey = startY - endY;
+                float delta = (fistancey / touchScreen) * maxVoice;
+                int voice = (int) Math.min(Math.max(mVol + delta,0),maxVoice);
+                if(delta != 0){
+                    updataVoice(voice,false);
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+                break;
+        }
         return super.onTouchEvent(event);
     }
 
@@ -291,8 +376,22 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         initBerrary();
         findViews();
         setListener();
+        initData();
         setButtonState();
 
+    }
+    //得到屏幕的宽高
+    private void initData() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+
+        am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        currentVoice = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        maxVoice = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        seekbarVoice.setMax(maxVoice);
+        seekbarVoice.setProgress(currentVoice);
     }
 
     private void setData() {
@@ -324,6 +423,46 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         videoView.setOnCompletionListener(new MyOnCompletion());
 
         seekbarVideo.setOnSeekBarChangeListener(new VideoOnSeekBarChangeListener());
+
+        seekbarVoice.setOnSeekBarChangeListener(new VoiceOnSeekBarChangeListener());
+    }
+
+    class VoiceOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener{
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(fromUser == true){
+                if(progress > 0)
+                {
+                    isMute = false;
+                }else if(progress == 0){
+                    isMute = true;
+                }
+                updataVoice(progress,isMute);
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+        }
+    }
+
+    private void updataVoice(int progress,boolean isMute) {
+        if(isMute){
+            am.setStreamVolume(AudioManager.STREAM_MUSIC,0,1);
+            seekbarVoice.setProgress(0);
+        }else{
+            am.setStreamVolume(AudioManager.STREAM_MUSIC,progress,1);
+            seekbarVoice.setProgress(progress);
+            currentVoice = progress;
+        }
+
     }
 
     @Override
@@ -378,11 +517,14 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
 
         @Override
         public void onPrepared(MediaPlayer mp) {
+            vidoeWidth = mp.getVideoWidth();
+            videoHeight = mp.getVideoHeight();
             videoView.start();
             int duration = videoView.getDuration();
             seekbarVideo.setMax(duration);
             handler.sendEmptyMessage(PROGRESS);
             tvMaxtime.setText(utils.stringForTime(videoView.getDuration()));
+            setVideoType(Default_SCREEN);
         }
     }
     private Handler handler = new Handler(){
@@ -404,11 +546,19 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
             }
         }
     };
+    private void setScreenSize(int sizeType){
 
+    }
     private String getSystemTime() {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         return format.format(new Date());
     }
 
     private Utils utils = new Utils();
+
+    private float startY = 0;
+    private float touchScreen= 0;
+    private float mVol = 0;
+
+
 }
