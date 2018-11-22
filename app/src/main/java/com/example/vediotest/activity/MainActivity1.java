@@ -1,5 +1,6 @@
 package com.example.vediotest.activity;
 
+import android.media.AudioManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -51,6 +52,7 @@ public class MainActivity1 extends AppCompatActivity {
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             switch (checkedId){
                 default:
+
                     position = 0;
                     break;
                 case R.id.rb_netvideo:

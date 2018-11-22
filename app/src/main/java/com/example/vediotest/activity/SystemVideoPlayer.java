@@ -84,6 +84,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     private int currentVoice;
     private int maxVoice;
     private boolean isMute = false;//是否静音
+    private boolean isNetUri;
 
     /**
      * Find the Views in the layout<br />
@@ -110,6 +111,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
         btnPause = (Button)findViewById( R.id.btn_pause );
         btnNext = (Button)findViewById( R.id.btn_next );
         btnFullScreen = (Button)findViewById( R.id.btn_full_screen );
+
 
         btnVoice.setOnClickListener( this );
         btnSwitchPlayer.setOnClickListener( this );
@@ -243,6 +245,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
             position--;
             if(position >= 0){
                 MediaItem mediaItem = mediaItems.get(position);
+                isNetUri = utils.isNetUri(mediaItem.getData());
                 videoView.setVideoPath(mediaItem.getData());
                 setButtonState();
             }
@@ -280,6 +283,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
             position++;
             if(position < mediaItems.size()){
                 MediaItem mediaItem = mediaItems.get(position);
+                isNetUri = utils.isNetUri(mediaItem.getData());
                 videoView.setVideoPath(mediaItem.getData());
                 setButtonState();
             }
@@ -397,12 +401,11 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     private void setData() {
         if(mediaItems != null && mediaItems.size() > 0){
            MediaItem mediaItem = mediaItems.get(position);
-            if (mediaItem.getName() != null) {
-//                tvName.setText(mediaItem.getName());
-            }
+            isNetUri = utils.isNetUri(mediaItem.getData());
             videoView.setVideoPath(mediaItem.getData());
         }else if(uri != null){
 //            tvName.setText(uri.toString());
+            isNetUri = utils.isNetUri(uri.toString());
             videoView.setVideoURI(uri);
         }
     }
@@ -539,6 +542,16 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
                     tvCurrenttime.setText(utils.stringForTime(currentPostion));
                     handler.sendEmptyMessageDelayed(PROGRESS,1000);
                     ivSystemTime.setText(getSystemTime());
+
+                    if(isNetUri){//网络视频有缓冲效果
+                        int buffer = videoView.getBufferPercentage();
+                        int totabBUffer = buffer * seekbarVideo.getMax();
+                        int secondaryProgress = totabBUffer / 100;
+                        seekbarVideo.setSecondaryProgress(secondaryProgress);
+                    }else{
+                        seekbarVideo.setSecondaryProgress(0);
+                    }
+
                     break;
                 case HIDE_MEDIACONTROLLER:
                     hideMediaControll();
