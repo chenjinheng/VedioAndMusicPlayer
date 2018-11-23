@@ -58,7 +58,16 @@
         <activity
             android:name=".activity.MainActivity1"
             android:launchMode="singleTask" />
-        <activity android:name=".activity.AudioPlayActivity"></activity>
+        <activity android:name=".activity.AudioPlayActivity" />
+
+        <service
+            android:name=".service.MusicPlayerService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.openaudio"></action>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
