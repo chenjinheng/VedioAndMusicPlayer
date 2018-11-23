@@ -22,9 +22,9 @@ public class NetVideoPager extends BasePager {
 
     @Override
     public View initView() {
-        View view = View.inflate(context, R.layout.netvidep_pager,null);
-        x.view().inject(this,view);
-        return view;
+//        View view = View.inflate(context, R.layout.netvidep_pager,null);
+//        x.view().inject(this,view);
+        return textView;
     }
 
     @Override
