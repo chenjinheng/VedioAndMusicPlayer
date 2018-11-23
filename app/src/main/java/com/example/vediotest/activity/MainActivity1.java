@@ -41,9 +41,9 @@ public class MainActivity1 extends AppCompatActivity {
     }
 
     private void initPager() {
-        arrayList.add(new VideoPager(this));
+        arrayList.add(new VideoPager(this,true));
         arrayList.add(new NetVideoPager(this));
-        arrayList.add(new MusicPager(this));
+        arrayList.add(new MusicPager(this,false));
         arrayList.add(new NetMusicPager(this));
     }
     class MyOnCheckChangeListener implements RadioGroup.OnCheckedChangeListener{

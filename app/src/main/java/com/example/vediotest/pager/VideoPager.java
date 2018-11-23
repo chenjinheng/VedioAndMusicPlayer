@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class VideoPager extends BasePager {
+    private final boolean isVideo;
     private Utils utils = new Utils();
     private VideoPagerAdapter videoPagerAdapter;
     private Handler handler = new Handler(){
@@ -50,7 +51,7 @@ public class VideoPager extends BasePager {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(mediaItems != null && mediaItems.size() > 0){
-                videoPagerAdapter = new VideoPagerAdapter(context,mediaItems);
+                videoPagerAdapter = new VideoPagerAdapter(context,mediaItems,true);
                 listView.setAdapter(videoPagerAdapter);
                 tv_video.setVisibility(View.GONE);
             }else{
@@ -63,9 +64,10 @@ public class VideoPager extends BasePager {
     private ListView listView;
     private ProgressBar pb_video;
     private ArrayList<MediaItem> mediaItems;
-    public VideoPager(Context context) {
+    public VideoPager(Context context,boolean isVideo) {
         super(context);
         this.context = context;
+        this.isVideo = isVideo;
     }
 
     @Override

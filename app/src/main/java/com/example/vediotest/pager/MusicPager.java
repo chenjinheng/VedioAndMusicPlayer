@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.vediotest.R;
+import com.example.vediotest.activity.AudioPlayActivity;
 import com.example.vediotest.activity.SystemVideoPlayer;
 import com.example.vediotest.adapter.VideoPagerAdapter;
 import com.example.vediotest.base.BasePager;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class MusicPager extends BasePager {
+    private final boolean isVideo;
     private Utils utils = new Utils();
     private VideoPagerAdapter videoPagerAdapter;
     private Handler handler = new Handler(){
@@ -41,7 +43,7 @@ public class MusicPager extends BasePager {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(mediaItems != null && mediaItems.size() > 0){
-                videoPagerAdapter = new VideoPagerAdapter(context,mediaItems);
+                videoPagerAdapter = new VideoPagerAdapter(context,mediaItems,false);
                 listView.setAdapter(videoPagerAdapter);
                 tv_video.setVisibility(View.GONE);
             }else{
@@ -54,8 +56,9 @@ public class MusicPager extends BasePager {
     private ListView listView;
     private ProgressBar pb_video;
     private ArrayList<MediaItem> mediaItems;
-    public MusicPager(Context context) {
+    public MusicPager(Context context,boolean isVideo) {
         super(context);
+        this.isVideo = isVideo;
         this.context = context;
     }
 
@@ -72,14 +75,8 @@ public class MusicPager extends BasePager {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            MediaItem mediaItem = mediaItems.get(position);
 
-            Intent intent = new Intent(context,SystemVideoPlayer.class);
-//            intent.setDataAndType(Uri.parse(mediaItem.getData()),"video/*");
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("videolist",mediaItems);
-            intent.putExtras(bundle);
-            intent.putExtra("position",position);
+            Intent intent = new Intent(context,AudioPlayActivity.class);
             context.startActivity(intent);
         }
     }
