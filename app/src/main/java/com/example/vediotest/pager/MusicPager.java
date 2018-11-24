@@ -77,6 +77,7 @@ public class MusicPager extends BasePager {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             Intent intent = new Intent(context,AudioPlayActivity.class);
+            intent.putExtra("position",position);
             context.startActivity(intent);
         }
     }

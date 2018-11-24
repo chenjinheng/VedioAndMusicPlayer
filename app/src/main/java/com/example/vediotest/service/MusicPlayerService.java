@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class MusicPlayerService extends Service {
+    public static final String S = "com.example.videotext.OPEN";
     private ArrayList<MediaItem> mediaItems = new ArrayList<>();
     private int position;
     private MediaItem mediaItem;
@@ -101,6 +102,11 @@ public class MusicPlayerService extends Service {
         public int getPlayMode() throws RemoteException {
             return service.getPlayMode();
         }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            return service.isPlaying();
+        }
     };
 
     @Override
@@ -154,10 +160,10 @@ public class MusicPlayerService extends Service {
     private void openAudio(int position){
         this.position = position;
         if(mediaItems != null && mediaItems.size() > 0){
-            mediaItem = mediaItems.get(position);
+            mediaItem = mediaItems.get(this.position);
             if(mediaPlayer != null){
                 mediaPlayer.release();
-                mediaPlayer.reset();
+//                mediaPlayer.reset();
             }
             mediaPlayer = new MediaPlayer();
             try {
@@ -193,9 +199,16 @@ public class MusicPlayerService extends Service {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
+            notifyChange(S);
             start();
         }
     }
+
+    private void notifyChange(String s) {
+        Intent intent = new Intent(s);
+        sendBroadcast(intent);
+    }
+
     //播放音乐
     private void start(){
         mediaPlayer.start();
@@ -203,7 +216,7 @@ public class MusicPlayerService extends Service {
 
     //暂停音乐
     private void pause(){
-
+        mediaPlayer.pause();
     }
 
     //停止音乐
@@ -222,13 +235,15 @@ public class MusicPlayerService extends Service {
     }
 
     private String getAritist(){
-        return null;
+        return mediaItem.getArtist();
     }
 
-
+    private boolean isPlaying(){
+        return mediaPlayer.isPlaying();
+    }
     //得到歌曲名字
     private String getName(){
-        return "";
+        return mediaItem.getName();
     }
 
 
@@ -252,4 +267,5 @@ public class MusicPlayerService extends Service {
     private int getPlayMode(){
         return 0;
     }
+
 }
