@@ -1,5 +1,8 @@
 package com.example.vediotest.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -12,6 +15,8 @@ import android.provider.MediaStore;
 import android.widget.Toast;
 
 import com.example.vediotest.IMusicPlayerService;
+import com.example.vediotest.R;
+import com.example.vediotest.activity.AudioPlayActivity;
 import com.example.vediotest.domain.MediaItem;
 
 import java.io.IOException;
@@ -27,6 +32,15 @@ public class MusicPlayerService extends Service {
     private int position;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
+
+    public static final int REPEAT_NORMAL = 1;
+    public static final int REPEAT_SINGLE = 2;
+    public static final int REPEAT_ALL = 3;
+    private int palymode = REPEAT_NORMAL;
+
+
+    private NotificationManager notificationManager;
+
 
     public MusicPlayerService() {
     }
@@ -64,6 +78,11 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
+        public void seekTo(int position) throws RemoteException {
+            service.seekTo(position);
+        }
+
+        @Override
         public int getDuration() throws RemoteException {
             return service.getDuration();
         }
@@ -72,6 +91,8 @@ public class MusicPlayerService extends Service {
         public String getAritist() throws RemoteException {
             return service.getAritist();
         }
+
+
 
         @Override
         public String getName() throws RemoteException {
@@ -156,14 +177,17 @@ public class MusicPlayerService extends Service {
         executor.execute(target);
     }
 
+    private void seekTo(int position){
+        mediaPlayer.seekTo(position);
+    }
     //根据位置打开音频文件
     private void openAudio(int position){
         this.position = position;
         if(mediaItems != null && mediaItems.size() > 0){
             mediaItem = mediaItems.get(this.position);
             if(mediaPlayer != null){
-                mediaPlayer.release();
-//                mediaPlayer.reset();
+//                mediaPlayer.release();
+                mediaPlayer.reset();
             }
             mediaPlayer = new MediaPlayer();
             try {
@@ -212,6 +236,19 @@ public class MusicPlayerService extends Service {
     //播放音乐
     private void start(){
         mediaPlayer.start();
+
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this, AudioPlayActivity.class);
+        intent.putExtra("Notification",true);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.notification_music_playing)
+                .setContentTitle("简易音乐")
+                .setContentText("正在播放" + getName())
+                .setContentIntent(pendingIntent)
+                .build();
+
+        notificationManager.notify(1,notification);
     }
 
     //暂停音乐
@@ -226,12 +263,12 @@ public class MusicPlayerService extends Service {
 
     //得到当前播放进度
     private int getCurrentPosition(){
-        return 0;
+        return mediaPlayer.getCurrentPosition();
     }
 
     //得到当前音频的总时长
     private int getDuration(){
-        return 0;
+        return mediaPlayer.getDuration();
     }
 
     private String getAritist(){
@@ -261,11 +298,11 @@ public class MusicPlayerService extends Service {
 
     //设置播放模式
     private void setPlayMode(int playmode){
-
+        this.palymode = playmode;
     }
 
     private int getPlayMode(){
-        return 0;
+        return this.palymode;
     }
 
 }

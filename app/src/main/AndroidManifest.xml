@@ -58,7 +58,7 @@
         <activity
             android:name=".activity.MainActivity1"
             android:launchMode="singleTask" />
-        <activity android:name=".activity.AudioPlayActivity" />
+        <activity android:name=".activity.AudioPlayActivity" android:launchMode="singleTask"/>
 
         <service
             android:name=".service.MusicPlayerService"

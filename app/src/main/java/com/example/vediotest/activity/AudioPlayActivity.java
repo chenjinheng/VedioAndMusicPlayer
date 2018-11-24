@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,10 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.vediotest.IMusicPlayerService;
 import com.example.vediotest.R;
 import com.example.vediotest.service.MusicPlayerService;
+import com.example.vediotest.utils.Utils;
 
 public class AudioPlayActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView audio_iv_icon;
@@ -40,6 +44,7 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     private Button audioBtnPause;
     private Button audioBtnNext;
     private Button audioBtnLyrcScreen;
+    private boolean notification;
 
     /**
      * Find the Views in the layout<br />
@@ -70,6 +75,32 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
         audioBtnPause.setOnClickListener( this );
         audioBtnNext.setOnClickListener( this );
         audioBtnLyrcScreen.setOnClickListener( this );
+
+        audioSeekbarAudio.setOnSeekBarChangeListener(new MyOnSeekBarChangeListener());
+    }
+
+    class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener{
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(fromUser){
+                try {
+                    iMusicPlayerService.seekTo(progress);
+                    audioSeekbarAudio.setProgress(progress);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
     }
 
     /**
@@ -82,6 +113,8 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         if ( v == audioBtnAudiomodle ) {
             // Handle clicks for audioBtnAudiomodle
+
+            setPlaymode();
         } else if ( v == audioBtnPre ) {
             // Handle clicks for audioBtnPre
         } else if ( v == audioBtnPause ) {
@@ -106,6 +139,51 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    private void setPlaymode() {
+
+        try {
+               int playmode = iMusicPlayerService.getPlayMode();
+            if(playmode == MusicPlayerService.REPEAT_NORMAL){
+                playmode = MusicPlayerService.REPEAT_SINGLE;
+            }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+                playmode = MusicPlayerService.REPEAT_ALL;
+            }else if(playmode == MusicPlayerService.REPEAT_ALL){
+                playmode = MusicPlayerService.REPEAT_NORMAL;
+            }
+            else {
+                playmode = MusicPlayerService.REPEAT_NORMAL;
+            }
+
+            iMusicPlayerService.setPlayMode(playmode);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        showPlaymode();
+    }
+
+    private void showPlaymode() {
+        try {
+            int playmode = iMusicPlayerService.getPlayMode();
+            if(playmode == MusicPlayerService.REPEAT_NORMAL){
+               audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
+                Toast.makeText(this, "顺序循环", Toast.LENGTH_SHORT).show();
+            }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_signle_select);
+                Toast.makeText(this, "单曲播放", Toast.LENGTH_SHORT).show();
+            }else if(playmode == MusicPlayerService.REPEAT_ALL){
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_all_select);
+                Toast.makeText(this, "全部播放", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
+                Toast.makeText(this, "顺序循环", Toast.LENGTH_SHORT).show();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private ServiceConnection con = new ServiceConnection() {
         @Override
@@ -113,7 +191,11 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
             iMusicPlayerService = IMusicPlayerService.Stub.asInterface(service);
             if(iMusicPlayerService != null){
                 try {
-                    iMusicPlayerService.openAudio(position);
+                    if (!notification) {
+                        iMusicPlayerService.openAudio(position);
+                    }else{
+                        showViewData();
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -155,11 +237,35 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
             showViewData();
        }
    }
+    private Utils utils;
+    private static final int PROGRESS = 1;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case PROGRESS:
+                    try {
+                        utils = new Utils();
+                        int currentPostion = iMusicPlayerService.getCurrentPosition();
+                        audioSeekbarAudio.setProgress(currentPostion);
+                        audioTvTime.setText(utils.stringForTime(currentPostion) + "/" + utils.stringForTime(iMusicPlayerService.getDuration()));
+                        handler.removeMessages(PROGRESS);
+                        handler.sendEmptyMessageDelayed(PROGRESS,1000);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+        }
+    };
 
     private void showViewData() {
         try {
             audioTvArtist.setText(iMusicPlayerService.getAritist().toString());
             audioTvName.setText(iMusicPlayerService.getName().toString());
+            audioSeekbarAudio.setMax(iMusicPlayerService.getDuration());
+            handler.sendEmptyMessage(PROGRESS);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -174,7 +280,11 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
 
     private void getData() {
 //        position = getIntent().getIntExtra("position",0);
-        position = getIntent().getIntExtra("position",0);
+
+        notification = getIntent().getBooleanExtra("Notification",false);
+        if (!notification) {
+            position = getIntent().getIntExtra("position",0);
+        }
     }
 
 
@@ -184,8 +294,9 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
         super.onDestroy();
         unbindService(con );
         if (myReceiver != null) {
-            myReceiver = null;
             unregisterReceiver(myReceiver);
+            myReceiver = null;
         }
+        handler.removeCallbacksAndMessages(null);
     }
 }

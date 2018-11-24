@@ -23,7 +23,7 @@ interface IMusicPlayerService {
         //得到当前播放进度
         int getCurrentPosition();
 
-
+        void seekTo(int position);
 
         //得到当前音频的总时长
         int getDuration();
