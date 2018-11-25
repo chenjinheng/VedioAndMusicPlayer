@@ -26,12 +26,14 @@ import com.example.vediotest.R;
 import com.example.vediotest.domain.MediaItem;
 import com.example.vediotest.service.MusicPlayerService;
 import com.example.vediotest.utils.Utils;
+import com.example.vediotest.view.ShowLyricView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class AudioPlayActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int SHOW_LYRIC = 2;
     private ImageView audio_iv_icon;
     private int position;
     private IMusicPlayerService iMusicPlayerService;
@@ -51,6 +53,8 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     private Button audioBtnLyrcScreen;
     private boolean notification;
 
+    private ShowLyricView slv_lyric;
+
     /**
      * Find the Views in the layout<br />
      * <br />
@@ -58,6 +62,7 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
     private void findViews() {
+        slv_lyric = (ShowLyricView) findViewById(R.id.slv_lyric);
         audio_iv_icon = (ImageView) findViewById(R.id.audio_iv_icon);
         audio_iv_icon.setBackgroundResource(R.drawable.animation_list);
 
@@ -277,6 +282,8 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     public void showData(MediaItem mediaItem) {
         showViewData();
         checkPlaymode();
+
+        handler.sendEmptyMessageDelayed(SHOW_LYRIC,1000);
     }
 
     private Utils utils;
@@ -297,6 +304,20 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                    break;
+                case SHOW_LYRIC://显示歌词
+                    try {
+                        int currentPosition = iMusicPlayerService.getCurrentPosition();
+
+                        handler.removeMessages(SHOW_LYRIC);
+                        handler.sendEmptyMessage(SHOW_LYRIC);
+
+                        slv_lyric.setShowNextLyric(currentPosition);
+
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
                     break;
             }
         }

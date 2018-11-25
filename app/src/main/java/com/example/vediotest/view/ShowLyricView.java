@@ -23,6 +23,9 @@ public class ShowLyricView extends TextView {
     private int height;
     private int index;
     private int textHeight = 100;
+    private int currentPostion;
+    private long sleepTime;
+    private long timePoint;
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -111,6 +114,28 @@ public class ShowLyricView extends TextView {
 
         }else{
             canvas.drawText("没有歌词",width / 2,height / 2,whitePaint);
+        }
+    }
+
+    public void setShowNextLyric(int currentPosition) {
+        this.currentPostion = currentPosition;
+
+        if(lyrics == null || lyrics.size() == 0){
+            return;
+        }
+
+        for(int i = 1;i < lyrics.size();i++){
+            if(currentPosition < lyrics.get(i).getTimePoint()){
+                int tempIndex = i - 1;
+                if(currentPosition >= lyrics.get(tempIndex).getTimePoint()){
+                    index = tempIndex;
+                    sleepTime = lyrics.get(index).getSleepTime();
+                    timePoint = lyrics.get(index).getTimePoint();
+
+
+                }
+            }
+            invalidate();
         }
     }
 }
