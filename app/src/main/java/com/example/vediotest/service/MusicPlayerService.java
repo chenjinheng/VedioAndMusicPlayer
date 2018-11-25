@@ -21,6 +21,8 @@ import com.example.vediotest.activity.AudioPlayActivity;
 import com.example.vediotest.domain.MediaItem;
 import com.example.vediotest.utils.CacheUtils;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -233,7 +235,8 @@ public class MusicPlayerService extends Service {
 
         @Override
         public void onPrepared(MediaPlayer mp) {
-            notifyChange(S);
+//            notifyChange(S);
+            EventBus.getDefault().post(mediaItem);
             start();
         }
     }
@@ -339,7 +342,7 @@ public class MusicPlayerService extends Service {
         }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
             Log.e("TAG","REPEAT_SINGLE");
             position++;
-            if(position > mediaItems.size()){
+            if(position >= mediaItems.size()){
                 position = 0;
             }
         }else if(playmode == MusicPlayerService.REPEAT_ALL){

@@ -23,8 +23,13 @@ import android.widget.Toast;
 
 import com.example.vediotest.IMusicPlayerService;
 import com.example.vediotest.R;
+import com.example.vediotest.domain.MediaItem;
 import com.example.vediotest.service.MusicPlayerService;
 import com.example.vediotest.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class AudioPlayActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView audio_iv_icon;
@@ -256,18 +261,24 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initData() {
-        myReceiver = new MyReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MusicPlayerService.S);
-        registerReceiver(myReceiver,intentFilter);
+//        myReceiver = new MyReceiver();
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(MusicPlayerService.S);
+//        registerReceiver(myReceiver,intentFilter);
+        EventBus.getDefault().register(this);
     }
    class MyReceiver extends BroadcastReceiver{
        @Override
        public void onReceive(Context context, Intent intent) {
-            showViewData();
-           checkPlaymode();
+            showData(null);
        }
    }
+    @Subscribe(threadMode = ThreadMode.MAIN,sticky = false,priority = 0)
+    public void showData(MediaItem mediaItem) {
+        showViewData();
+        checkPlaymode();
+    }
+
     private Utils utils;
     private static final int PROGRESS = 1;
     private Handler handler = new Handler(){
@@ -323,11 +334,15 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(con );
-        if (myReceiver != null) {
-            unregisterReceiver(myReceiver);
-            myReceiver = null;
+        if (con != null) {
+            unbindService(con );
+            con = null;
         }
+        EventBus.getDefault().unregister(this);
+//        if (myReceiver != null) {
+//            unregisterReceiver(myReceiver);
+//            myReceiver = null;
+//        }
         handler.removeCallbacksAndMessages(null);
     }
 }
