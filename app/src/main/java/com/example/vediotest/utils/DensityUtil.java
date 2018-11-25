@@ -2,12 +2,6 @@ package com.example.vediotest.utils;
 
 import android.content.Context;
 
-/**
- * 作者：尚硅谷-杨光福 on 2016/7/25 11:58
- * 微信：yangguangfu520
- * QQ号：541433511
- * 作用：xxxx
- */
 public class DensityUtil {
     /**
      * 根据手机的分辨率从 dip 的单位 转成为 px(像素)

@@ -117,6 +117,13 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
             setPlaymode();
         } else if ( v == audioBtnPre ) {
             // Handle clicks for audioBtnPre
+            if(iMusicPlayerService != null){
+                try {
+                    iMusicPlayerService.pre();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if ( v == audioBtnPause ) {
             // Handle clicks for audioBtnPause
             if(iMusicPlayerService != null){
@@ -134,6 +141,13 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
             }
         } else if ( v == audioBtnNext ) {
             // Handle clicks for audioBtnNext
+            if(iMusicPlayerService != null){
+                try {
+                    iMusicPlayerService.next();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if ( v == audioBtnLyrcScreen ) {
             // Handle clicks for audioBtnLyrcScreen
         }
@@ -167,23 +181,39 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
             int playmode = iMusicPlayerService.getPlayMode();
             if(playmode == MusicPlayerService.REPEAT_NORMAL){
                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
-                Toast.makeText(this, "顺序循环", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "顺序播放", Toast.LENGTH_SHORT).show();
             }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
                 audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_signle_select);
-                Toast.makeText(this, "单曲播放", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "单曲循环", Toast.LENGTH_SHORT).show();
             }else if(playmode == MusicPlayerService.REPEAT_ALL){
                 audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_all_select);
-                Toast.makeText(this, "全部播放", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "全部循环", Toast.LENGTH_SHORT).show();
             }
             else {
                 audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
-                Toast.makeText(this, "顺序循环", Toast.LENGTH_SHORT).show();
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
+    private void checkPlaymode(){
+        try {
+            int playmode = iMusicPlayerService.getPlayMode();
+            if(playmode == MusicPlayerService.REPEAT_NORMAL){
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
+            }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_signle_select);
+            }else if(playmode == MusicPlayerService.REPEAT_ALL){
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_all_select);
+            }
+            else {
+                audioBtnAudiomodle.setBackgroundResource(R.drawable.btn_audiomodle_select);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     private ServiceConnection con = new ServiceConnection() {
         @Override
@@ -235,6 +265,7 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
        @Override
        public void onReceive(Context context, Intent intent) {
             showViewData();
+           checkPlaymode();
        }
    }
     private Utils utils;

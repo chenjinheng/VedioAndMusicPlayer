@@ -12,12 +12,14 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.vediotest.IMusicPlayerService;
 import com.example.vediotest.R;
 import com.example.vediotest.activity.AudioPlayActivity;
 import com.example.vediotest.domain.MediaItem;
+import com.example.vediotest.utils.CacheUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,6 +134,7 @@ public class MusicPlayerService extends Service {
 
     @Override
     public void onCreate() {
+        this.palymode = CacheUtils.getPlaymode(this,"playmode");
         getDataFromList();
         super.onCreate();
     }
@@ -196,6 +199,13 @@ public class MusicPlayerService extends Service {
                 mediaPlayer.setOnCompletionListener(new MyOnCompletionListener());
                 mediaPlayer.setOnErrorListener(new MyOnErrorListener());
                 mediaPlayer.prepareAsync();
+
+                if(palymode == REPEAT_SINGLE){
+                    mediaPlayer.setLooping(true);
+                }else{
+                    mediaPlayer.setLooping(false);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -290,15 +300,113 @@ public class MusicPlayerService extends Service {
     }
     //播放下一个
     private void next(){
+        setNextPosition();
 
+        openNextAudio();
+    }
+
+    private void openNextAudio() {
+        Log.e("TAG","openNextAudio" );
+            int playmode = getPlayMode();
+            if(playmode == MusicPlayerService.REPEAT_NORMAL){
+                Log.e("TAG","REPEAT_NORMAL" );
+                if(position < mediaItems.size()){
+                    openAudio(position);
+                    Log.e("TAG",position + "00" );
+                }else{
+                    position = mediaItems.size() - 1;
+                }
+            }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+                openAudio(position);
+
+            }else if(playmode == MusicPlayerService.REPEAT_ALL){
+                openAudio(position);
+            }
+            else {
+                if(position < mediaItems.size()){
+                    openAudio(position);
+                }else{
+                    position = mediaItems.size() - 1;
+                }
+            }
+    }
+
+    private void setNextPosition() {
+        int playmode = getPlayMode();
+        Log.e("TAG",position + "");
+        if(playmode == MusicPlayerService.REPEAT_NORMAL){
+            ++position;
+        }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+            Log.e("TAG","REPEAT_SINGLE");
+            position++;
+            if(position > mediaItems.size()){
+                position = 0;
+            }
+        }else if(playmode == MusicPlayerService.REPEAT_ALL){
+            position++;
+            if(position >= mediaItems.size()){
+                position = 0;
+            }
+        }
+        else {
+            position++;
+        }
     }
 
     //播放上一个
-    private void pre(){}
+    private void pre(){
+        setPrePosition();
+
+        openPreAudio();
+    }
+
+    private void setPrePosition() {
+        int playmode = getPlayMode();
+        if(playmode == MusicPlayerService.REPEAT_NORMAL){
+            position--;
+        }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+            position--;
+            if(position < 0){
+                position = mediaItems.size() - 1;
+            }
+        }else if(playmode == MusicPlayerService.REPEAT_ALL){
+            position++;
+            if(position < 0){
+                position = mediaItems.size() - 1;
+            }
+        }
+        else {
+            position--;
+        }
+    }
+
+    private void openPreAudio() {
+        int playmode = getPlayMode();
+        if(playmode == MusicPlayerService.REPEAT_NORMAL){
+            if(position >= 0){
+                openAudio(position);
+            }else{
+                position = 0;
+            }
+        }else if(playmode == MusicPlayerService.REPEAT_SINGLE){
+            openAudio(position);
+
+        }else if(playmode == MusicPlayerService.REPEAT_ALL){
+            openAudio(position);
+        }
+        else {
+            if(position >= 0){
+                openAudio(position);
+            }else{
+                position = 0;
+            }
+        }
+    }
 
     //设置播放模式
     private void setPlayMode(int playmode){
         this.palymode = playmode;
+        CacheUtils.putPlaymode(this,"playmode",playmode);
     }
 
     private int getPlayMode(){
