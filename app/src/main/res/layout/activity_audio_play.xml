@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.vediotest.activity.AudioPlayActivity">
     <RelativeLayout
+        android:id="@+id/rl_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
@@ -38,6 +39,7 @@
             />
     </RelativeLayout>
     <LinearLayout
+        android:id="@+id/ll_bottom"
         android:layout_above="@+id/ll_select"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,6 +84,7 @@
             android:background="@drawable/btn_audiomodle_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <Button
             android:layout_weight="1"
             android:gravity="center_vertical"
@@ -89,6 +92,7 @@
             android:background="@drawable/btn_audio_pre_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <Button
             android:layout_weight="1"
             android:gravity="center_vertical"
@@ -111,6 +115,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
+        <com.example.vediotest.view.ShowLyricView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/slv_lyric"
+            android:layout_below="@+id/rl_top"
+            android:layout_above="@+id/ll_bottom"
+    />
 
 </RelativeLayout>
