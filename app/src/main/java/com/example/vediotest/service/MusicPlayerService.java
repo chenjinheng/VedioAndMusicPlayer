@@ -299,7 +299,7 @@ public class MusicPlayerService extends Service {
 
     //得到歌曲路径
     private String getAudiaData(){
-        return "";
+        return mediaItem.getData();
     }
     //播放下一个
     private void next(){

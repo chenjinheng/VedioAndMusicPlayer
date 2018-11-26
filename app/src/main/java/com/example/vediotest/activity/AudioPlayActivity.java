@@ -25,12 +25,15 @@ import com.example.vediotest.IMusicPlayerService;
 import com.example.vediotest.R;
 import com.example.vediotest.domain.MediaItem;
 import com.example.vediotest.service.MusicPlayerService;
+import com.example.vediotest.utils.LyricUtils;
 import com.example.vediotest.utils.Utils;
 import com.example.vediotest.view.ShowLyricView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.File;
 
 public class AudioPlayActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SHOW_LYRIC = 2;
@@ -283,7 +286,27 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
         showViewData();
         checkPlaymode();
 
-        handler.sendEmptyMessageDelayed(SHOW_LYRIC,1000);
+        showLyric();
+    }
+
+    private void showLyric() {
+        LyricUtils lyricUtils = new LyricUtils();
+        try {
+            String path = iMusicPlayerService.getAudiaData();
+            path = path.substring(0,path.lastIndexOf("."));
+            File file = new File(path + ".lrc");
+            if(!file.exists()){
+                file = new File(path + ".txt");
+            }
+            lyricUtils.readLyricFile(file);
+            slv_lyric.setLyric(lyricUtils.getLyrics());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        if(lyricUtils.isExistsLyric()) {
+            handler.sendEmptyMessage(SHOW_LYRIC);
+        }
     }
 
     private Utils utils;
