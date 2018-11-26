@@ -153,7 +153,7 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         } else if ( v == audioBtnNext ) {
-            // Handle clicks for audioBtnNext
+
             if(iMusicPlayerService != null){
                 try {
                     iMusicPlayerService.next();
@@ -162,7 +162,7 @@ public class AudioPlayActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         } else if ( v == audioBtnLyrcScreen ) {
-            // Handle clicks for audioBtnLyrcScreen
+
         }
     }
 
