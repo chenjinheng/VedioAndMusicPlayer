@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.vediotest.activity.MainActivity1">
-    <include layout="@layout/titlebar">
-    </include>
+    <!--<include layout="@layout/titlebar">-->
+    <!--</include>-->
     <FrameLayout
         android:id="@+id/fl_main_layout"
         android:layout_width="match_parent"
@@ -35,18 +35,7 @@
             android:textSize="10sp"
             android:button="@null"
             />
-        <RadioButton
-            android:id="@+id/rb_netvideo"
-            android:text="网络视频"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/rb_netvideo_select"
-            android:gravity="center"
-            android:drawablePadding="3dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:button="@null"
-            />
+
         <RadioButton
             android:id="@+id/rb_music"
             android:text="本地音乐"
@@ -59,17 +48,6 @@
             android:textSize="10sp"
             android:button="@null"
             />
-        <RadioButton
-            android:id="@+id/rb_netmusic"
-            android:layout_weight="1"
-            android:text="网络音乐"
-            android:drawableTop="@drawable/rb_netmusic_select"
-            android:gravity="center"
-            android:drawablePadding="3dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:button="@null"
-            />
+
     </RadioGroup>
 </LinearLayout>
