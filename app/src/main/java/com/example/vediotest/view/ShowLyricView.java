@@ -66,15 +66,15 @@ public class ShowLyricView extends TextView {
         whitePaint.setTextAlign(Paint.Align.CENTER);
 
 
-        for(int i = 0;i < 1000;i++){
-            Lyric lyric = new Lyric();
-
-            lyric.setTimePoint(1000 * i);
-            lyric.setSleepTime(1500 + i);
-            lyric.setContent("aaaaaaaaaaaa" + i);
-
-            lyrics.add(lyric);
-        }
+//        for(int i = 0;i < 1000;i++){
+//            Lyric lyric = new Lyric();
+//
+//            lyric.setTimePoint(1000 * i);
+//            lyric.setSleepTime(1500 + i);
+//            lyric.setContent("aaaaaaaaaaaa" + i);
+//
+//            lyrics.add(lyric);
+//        }
     }
 
     @Override
