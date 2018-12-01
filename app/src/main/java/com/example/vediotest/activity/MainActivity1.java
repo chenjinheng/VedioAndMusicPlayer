@@ -1,15 +1,9 @@
 package com.example.vediotest.activity;
 
-import android.media.AudioManager;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 
@@ -17,8 +11,6 @@ import com.example.vediotest.R;
 import com.example.vediotest.base.BasePager;
 import com.example.vediotest.fragment.ReplaceFragment;
 import com.example.vediotest.pager.MusicPager;
-import com.example.vediotest.pager.NetMusicPager;
-import com.example.vediotest.pager.NetVideoPager;
 import com.example.vediotest.pager.VideoPager;
 
 import java.util.ArrayList;
