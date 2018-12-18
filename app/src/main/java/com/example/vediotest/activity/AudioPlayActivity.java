@@ -35,6 +35,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 
+/**
+ * 视频播放界面
+ */
+
 public class AudioPlayActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SHOW_LYRIC = 2;
     private ImageView audio_iv_icon;

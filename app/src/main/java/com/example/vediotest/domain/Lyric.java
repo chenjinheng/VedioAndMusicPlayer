@@ -1,6 +1,7 @@
 package com.example.vediotest.domain;
 
 /**
+ *
  * Created by 陈金桁 on 2018/11/25.
  */
 public class Lyric {

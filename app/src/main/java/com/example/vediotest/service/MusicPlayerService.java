@@ -30,6 +30,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 后台播放服务
+ */
+
 public class MusicPlayerService extends Service {
     public static final String S = "com.example.videotext.OPEN";
     private ArrayList<MediaItem> mediaItems = new ArrayList<>();

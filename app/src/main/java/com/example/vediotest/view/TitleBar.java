@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.vediotest.R;
 
 /**
+ * 标题栏
  * Created by 陈金桁 on 2018/11/19.
  */
 

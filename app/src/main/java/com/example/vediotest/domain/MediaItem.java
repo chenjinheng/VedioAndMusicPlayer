@@ -3,6 +3,7 @@ package com.example.vediotest.domain;
 import java.io.Serializable;
 
 /**
+ *
  * Created by 陈金桁 on 2018/11/19.
  */
 

@@ -15,6 +15,10 @@ import com.example.vediotest.pager.VideoPager;
 
 import java.util.ArrayList;
 
+/**
+ * 主界面
+ */
+
 public class MainActivity1 extends AppCompatActivity {
     private FrameLayout frameLayout;
     private RadioGroup radioGroup;

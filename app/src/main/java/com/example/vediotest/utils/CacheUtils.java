@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 import com.example.vediotest.service.MusicPlayerService;
 
-
+/**
+ * 缓存工具
+ */
 public class CacheUtils {
 
     /**

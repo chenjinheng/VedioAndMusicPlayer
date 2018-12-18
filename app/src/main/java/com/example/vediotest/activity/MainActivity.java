@@ -8,6 +8,10 @@ import android.view.MotionEvent;
 
 import com.example.vediotest.R;
 
+/**
+LauncherActivity
+ */
+
 public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     @Override

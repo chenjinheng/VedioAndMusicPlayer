@@ -87,6 +87,7 @@ public class SystemVideoPlayer extends AppCompatActivity implements View.OnClick
     private boolean isNetUri;
 
     /**
+     * 音乐播放界面
      * Find the Views in the layout<br />
      * <br />
      * Auto-created on 2018-11-20 17:18:03 by Android Layout Finder

@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 /**
+ * 自定义VideoView
  * Created by 陈金桁 on 2018/11/20.
  */
 
